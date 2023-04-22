@@ -3,6 +3,10 @@ import Image from "next/image";
 import Head from "next/head";
 import { api } from "~/utils/api";
 import PostView from "~/components/PostView";
+import PageLayout from "~/components/Layout";
+import LoadingPage from "~/components/loading";
+import { generateSSGHelper } from "~/server/helpers/ssgHelper";
+import Link from "next/link";
 
 const ProfileFeed = (props: { userId: string }) => {
   const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
@@ -37,13 +41,15 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
       </Head>
       <PageLayout>
         <div className="relative h-48 bg-slate-600">
-          <Image
-            src={data.profileImageUrl}
-            alt={`${data.username ?? ""}'s profile picture`}
-            width={128}
-            height={128}
-            className="absolute bottom-0 left-0 -mb-[64px] ml-4 rounded-full border-4 border-black"
-          />
+          <Link href="/">
+            <Image
+              src={data.profileImageUrl}
+              alt={`${data.username ?? ""}'s profile picture`}
+              width={128}
+              height={128}
+              className="absolute bottom-0 left-0 -mb-[64px] ml-4 rounded-full border-4 border-black"
+            />
+          </Link>
         </div>
         <div className="h-[64px]"></div>
         <div className="p-4 text-2xl">{`@${data.username ?? ""}`}</div>
@@ -54,19 +60,8 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   );
 };
 
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import { appRouter } from "~/server/api/root";
-import { prisma } from "~/server/db";
-import superjson from "superjson";
-import PageLayout from "~/components/Layout";
-import LoadingPage from "~/components/loading";
-
 export const getStaticProps: GetStaticProps = async (context) => {
-  const ssg = createServerSideHelpers({
-    router: appRouter,
-    ctx: { prisma, userId: null },
-    transformer: superjson,
-  });
+  const ssg = generateSSGHelper();
 
   const slug = context.params?.slug;
   if (typeof slug !== "string") throw new Error("no slug");

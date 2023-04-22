@@ -20,7 +20,7 @@ const PostView = (props: PostWithUser) => {
       />
       <div className="flex flex-col justify-center text-slate-300">
         <div className="flex gap-2">
-          <Link href={`/@${author.username}`}>
+          <Link as={`@${author.username}`} href="/blog/[slug]">
             <span>{`@${author.username}`}</span>{" "}
           </Link>
           ·

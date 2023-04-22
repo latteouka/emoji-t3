@@ -1,16 +1,15 @@
 import { type NextPage } from "next";
-import { SignInButton, useUser } from "@clerk/nextjs";
+import { SignInButton, useUser, SignOutButton } from "@clerk/nextjs";
 import { api } from "~/utils/api";
-import type { RouterOutputs } from "~/utils/api";
 import Image from "next/image";
 import LoadingPage, { LoadingSpinner } from "~/components/loading";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import Link from "next/link";
 import PageLayout from "~/components/Layout";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import PostView from "~/components/PostView";
+import Link from "next/link";
 dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
@@ -37,14 +36,16 @@ const CreatePostWizard = () => {
 
   return (
     <div className="flex w-full gap-3">
-      <Image
-        src={user.profileImageUrl}
-        alt="my profile image"
-        width={56}
-        height={56}
-        className="h-14 w-14 rounded-full"
-        priority
-      />
+      <Link href="/">
+        <Image
+          src={user.profileImageUrl}
+          alt="my profile image"
+          width={56}
+          height={56}
+          className="h-14 w-14 rounded-full"
+          priority
+        />
+      </Link>
       <input
         type="text"
         placeholder="Type some emojis!"
@@ -59,6 +60,7 @@ const CreatePostWizard = () => {
         }}
         disabled={isPosting}
       />
+      <SignOutButton />
       {input !== "" && !isPosting && (
         <button onClick={() => mutate({ content: input })} disabled={isPosting}>
           Post
@@ -97,23 +99,18 @@ const Home: NextPage = () => {
 
   if (!userLoaded) return <div />;
 
-  // if (postsLoading) return <LoadingPage />;
-  // if (!data) return <div>Something went wrong</div>;
-
   return (
-    <>
-      <PageLayout>
-        <div className="flex border-b border-slate-400 p-4">
-          {!isSignedIn && (
-            <div className="flex justify-center">
-              <SignInButton />
-            </div>
-          )}
-          {isSignedIn && <CreatePostWizard />}
-        </div>
-        <Feed />
-      </PageLayout>
-    </>
+    <PageLayout>
+      <div className="flex border-b border-slate-400 p-4">
+        {!isSignedIn && (
+          <div className="flex justify-center">
+            <SignInButton />
+          </div>
+        )}
+        {isSignedIn && <CreatePostWizard />}
+      </div>
+      <Feed />
+    </PageLayout>
   );
 };
 

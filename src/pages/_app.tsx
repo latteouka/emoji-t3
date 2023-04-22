@@ -1,17 +1,15 @@
 import { type AppType } from "next/app";
-import { type Session } from "next-auth";
-import { ClerkProvider } from "@clerk/nextjs";
-
-import { api } from "~/utils/api";
-
 import "~/styles/globals.css";
+
+import { ClerkProvider } from "@clerk/nextjs";
+import { api } from "~/utils/api";
 import { Toaster } from "react-hot-toast";
 import Head from "next/head";
+import { useRouter } from "next/router";
 
-const MyApp: AppType<{ session: Session | null }> = ({
-  Component,
-  pageProps: { session, ...pageProps },
-}) => {
+const MyApp: AppType = ({ Component, pageProps }) => {
+  const router = useRouter();
+  console.log(router);
   return (
     <ClerkProvider {...pageProps}>
       <Head>
@@ -19,6 +17,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <meta name="description" content="EMOJIJIJIJIJI" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <Toaster position="bottom-center" />
       <Component {...pageProps} />
     </ClerkProvider>
